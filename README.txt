@@ -1,4 +1,4 @@
-#This code is really bad im sorry to anyone who has to look at it
+# This code is really bad im sorry to anyone who has to look at it
 
 Source installation information for modders
 -------------------------------------------
