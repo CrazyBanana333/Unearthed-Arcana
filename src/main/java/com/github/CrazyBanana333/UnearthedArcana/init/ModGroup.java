@@ -2,10 +2,8 @@ package com.github.CrazyBanana333.UnearthedArcana.init;
 
 import com.github.CrazyBanana333.UnearthedArcana.UnearthedArcana;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -17,13 +15,11 @@ public class ModGroup {
             // Set name of tab to display
             .title(Component.translatable("Unearthed Arcana"))
             // Set icon of creative tab
-            .icon(() -> new ItemStack(ModItems.EXAMPLE_BLOCK_ITEM.get()))
+            .icon(() -> new ItemStack(ModItems.THE_THRONGLER.get()))
             // Add default items to tab
             .displayItems((params, output) -> {
-                output.accept(ModItems.EXAMPLE_BLOCK_ITEM.get());
                 output.accept(ModItems.THE_THRONGLER.get());
 
-                output.accept(ModBlocks.EXAMPLE_BLOCK.get());
             })
             .build()
     );
