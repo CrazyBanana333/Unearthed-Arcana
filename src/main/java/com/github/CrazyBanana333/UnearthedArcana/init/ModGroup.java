@@ -19,6 +19,9 @@ public class ModGroup {
             // Add default items to tab
             .displayItems((params, output) -> {
                 output.accept(ModItems.THE_THRONGLER.get());
+                output.accept(ModItems.DAWN_OF_TIME.get());
+                output.accept(ModItems.DEEPEST_ENTROPY.get());
+                output.accept(ModItems.DELIVERANCE.get());
 
             })
             .build()

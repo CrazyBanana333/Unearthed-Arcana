@@ -1,9 +1,15 @@
 package com.github.CrazyBanana333.UnearthedArcana.items;
 
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.*;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import java.util.function.Consumer;
@@ -40,6 +46,8 @@ public class The_Throngler extends Item{
     private CameraType prev_camera_type = CameraType.FIRST_PERSON;
     private boolean using = false;
 
+    private boolean mainHand = true;
+
     public The_Throngler(Properties properties) {
         super(properties);
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
@@ -53,24 +61,27 @@ public class The_Throngler extends Item{
         return equipmentSlot == EquipmentSlot.MAINHAND ? this.thronglerAttributes : super.getDefaultAttributeModifiers(equipmentSlot);
     }
 
-    public InteractionResultHolder<ItemStack> use(Level p_77659_1_, Player p_77659_2_, InteractionHand p_77659_3_) {
-        ItemStack item = p_77659_2_.getItemInHand(p_77659_3_);
-        InteractionHand otherhand = p_77659_3_ == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-        ItemStack otheritem = p_77659_2_.getItemInHand(otherhand);
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack item = player.getItemInHand(hand);
+        InteractionHand otherhand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+        ItemStack otheritem = player.getItemInHand(otherhand);
 
-        if (p_77659_3_ == InteractionHand.OFF_HAND) {
-            return InteractionResultHolder.fail(item);
-        }else{
-            p_77659_2_.startUsingItem(p_77659_3_);
-            if (!using) {
-                prev_camera_type = Minecraft.getInstance().options.getCameraType();
-                using = true;
+        mainHand = hand == InteractionHand.MAIN_HAND;
 
-
-                playerName = p_77659_2_.getName().toString();
-            }
-            return InteractionResultHolder.consume(item);
+        if (!mainHand) {
+            CompoundTag tag = item.getOrCreateTag();
+            tag.putInt("CustomModelData", 1);
         }
+
+        player.startUsingItem(hand);
+        if (!using) {
+            prev_camera_type = Minecraft.getInstance().options.getCameraType();
+            using = true;
+
+
+            playerName = player.getName().toString();
+        }
+        return InteractionResultHolder.consume(item);
     }
 
     @Override
@@ -85,57 +96,105 @@ public class The_Throngler extends Item{
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.CUSTOM;
+        if (mainHand) {
+            return UseAnim.CUSTOM;
+        } else {
+            return UseAnim.SPEAR;
+        }
+
     }
 
     @Override
     public void onUseTick(Level level, LivingEntity living, ItemStack stack, int count) {
         int time = this.getUseDuration(stack) - count;
 
-        for (int i = 0; i < 30; i++) {
-            level.addParticle(ParticleTypes.END_ROD, living.getX() + Math.random()*BlastRadius - (double)BlastRadius/2, living.getY() + Math.random()*BlastRadius - (double)BlastRadius/2, living.getZ() + Math.random()*BlastRadius - (double)BlastRadius/2, 0, 0, 0);
-            if (i%6 == 0) {
-                level.addParticle(ParticleTypes.SOUL_FIRE_FLAME, living.getX() + (Math.random() * 2 - 1)*0.3, living.getY() + 2.2, living.getZ() + (Math.random() * 2 - 1)*0.3, (Math.random() * 2 - 1)*0.2, 0.2, (Math.random() * 2 - 1)*0.2);
-            }
-        }
+        InteractionHand useHand = living.getUsedItemHand();
 
-        if (time % 50 == 0) {
-            if (time < 200){
-                for (int i = 0; i < time/25; i++) {
-                    LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-                    lightningBolt.setPos(living.getX() + (Math.random() * 2 - 1)*i, living.getY(), living.getZ() + (Math.random() * 2 - 1)*i);
-                    lightningBolt.setVisualOnly(true);
-                    level.addFreshEntity(lightningBolt);
-                }
-            } else {
-                for (int i = 0; i < time/5; i++) {
-                    LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-                    lightningBolt.setPos(living.getX() + (Math.random() * 2 - 1)*i, living.getY(), living.getZ() + (Math.random() * 2 - 1)*i);
-                    lightningBolt.setVisualOnly(true);
-                    level.addFreshEntity(lightningBolt);
+        if (useHand == InteractionHand.MAIN_HAND) {
+
+
+            for (int i = 0; i < 30; i++) {
+                level.addParticle(ParticleTypes.END_ROD, living.getX() + Math.random() * BlastRadius - (double) BlastRadius / 2, living.getY() + Math.random() * BlastRadius - (double) BlastRadius / 2, living.getZ() + Math.random() * BlastRadius - (double) BlastRadius / 2, 0, 0, 0);
+                if (i % 6 == 0) {
+                    level.addParticle(ParticleTypes.SOUL_FIRE_FLAME, living.getX() + (Math.random() * 2 - 1) * 0.3, living.getY() + 2.2, living.getZ() + (Math.random() * 2 - 1) * 0.3, (Math.random() * 2 - 1) * 0.2, 0.2, (Math.random() * 2 - 1) * 0.2);
                 }
             }
 
-        }
+            if (time % 50 == 0) {
+                if (time < 200) {
+                    for (int i = 0; i < time / 25; i++) {
+                        LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
+                        lightningBolt.setPos(living.getX() + (Math.random() * 2 - 1) * i, living.getY(), living.getZ() + (Math.random() * 2 - 1) * i);
+                        lightningBolt.setVisualOnly(true);
+                        level.addFreshEntity(lightningBolt);
+                    }
+                } else {
+                    for (int i = 0; i < time / 5; i++) {
+                        LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
+                        lightningBolt.setPos(living.getX() + (Math.random() * 2 - 1) * i, living.getY(), living.getZ() + (Math.random() * 2 - 1) * i);
+                        lightningBolt.setVisualOnly(true);
+                        level.addFreshEntity(lightningBolt);
+                    }
+                }
 
-        if (time >= 200) {
-            for (int i = 0; i < 1000; i++) {
-                level.addParticle(ParticleTypes.SONIC_BOOM, living.getX() + Math.random() * BlastRadius - (double) BlastRadius / 2, living.getY() + Math.random() * BlastRadius - (double) BlastRadius / 2, living.getZ() + Math.random() * BlastRadius - (double) BlastRadius / 2, 0, 0, 0);
             }
-            killAllPlayersInRadius(level, living.getOnPos());
-        }
 
-        if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && Minecraft.getInstance().player == living){
-            Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
+            if (time >= 200) {
+                for (int i = 0; i < 1000; i++) {
+                    level.addParticle(ParticleTypes.SONIC_BOOM, living.getX() + Math.random() * BlastRadius - (double) BlastRadius / 2, living.getY() + Math.random() * BlastRadius - (double) BlastRadius / 2, living.getZ() + Math.random() * BlastRadius - (double) BlastRadius / 2, 0, 0, 0);
+                }
+                killAllPlayersInRadius(level, living.getOnPos());
+            }
+
+            if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON && Minecraft.getInstance().player == living) {
+                Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
+            }
         }
     }
 
     @Override
-    public void releaseUsing(ItemStack p_43394_, Level p_43395_, LivingEntity p_43396_, int p_43397_) {
+    public void releaseUsing(ItemStack stack, Level level, LivingEntity user, int remainingUseTicks) {
 
-        Minecraft.getInstance().options.setCameraType(prev_camera_type);
-        using = false;
-        playerName = null;
+        InteractionHand useHand = user.getUsedItemHand();
+
+        if (useHand == InteractionHand.MAIN_HAND) {
+
+            Minecraft.getInstance().options.setCameraType(prev_camera_type);
+            using = false;
+            playerName = null;
+
+        } else if (useHand == InteractionHand.OFF_HAND) {
+            if (user instanceof Player player) {
+                int i = this.getUseDuration(stack) - remainingUseTicks;
+                if (i >= 10) {
+                    //Support for enchants later maybe???
+                    float enchant = 0.0F;
+
+                    float f = user.getYRot();
+                    float g = user.getXRot();
+                    float h = -Mth.sin(f * ((float) Math.PI / 180F)) * Mth.cos(g * ((float) Math.PI / 180F));
+                    float k = -Mth.sin(g * ((float) Math.PI / 180F));
+                    float l = Mth.cos(f * ((float) Math.PI / 180F)) * Mth.cos(g * ((float) Math.PI / 180F));
+                    float m = Mth.sqrt(h * h + k * k + l * l);
+                    float n = 3.0F * ((5.0F + enchant) / 4.0F);
+                    h *= n / m;
+                    k *= n / m;
+                    l *= n / m;
+
+                    player.push(h, k, l);
+                    player.startAutoSpinAttack(20);
+                    if (player.onGround()) {
+                        player.move(MoverType.SELF, new Vec3((double) 0.0F, (double) 1.1999999F, (double) 0.0F));
+                    }
+
+                    SoundEvent sound = SoundEvents.TRIDENT_RIPTIDE_3;
+
+                    level.playSound(null, player, sound, SoundSource.PLAYERS, 1.0F, 1.0F);
+                }
+            }
+            CompoundTag tag = stack.getOrCreateTag();
+            tag.putInt("CustomModelData", 0);
+        }
 
 
     }

@@ -1,7 +1,7 @@
 package com.github.CrazyBanana333.UnearthedArcana.init;
 
 import com.github.CrazyBanana333.UnearthedArcana.UnearthedArcana;
-import com.github.CrazyBanana333.UnearthedArcana.items.The_Throngler;
+import com.github.CrazyBanana333.UnearthedArcana.items.*;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.BlockItem;
@@ -34,6 +34,9 @@ public class ModItems {
     // Creates a new BlockItem with the id "unearthedarcana:example_block", combining the namespace and path
     public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block", () -> new BlockItem(ModBlocks.EXAMPLE_BLOCK.get(), new Item.Properties()));
     public static final RegistryObject<Item> THE_THRONGLER = ITEMS.register("the_throngler", () -> new The_Throngler(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+    public static final RegistryObject<Item> DAWN_OF_TIME = ITEMS.register("dawn_of_time", () -> new Dawn_Of_Time(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+    public static final RegistryObject<Item> DEEPEST_ENTROPY = ITEMS.register("deepest_entropy", () -> new Deepest_Entropy(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+    public static final RegistryObject<Item> DELIVERANCE = ITEMS.register("deliverance", () -> new Deliverance(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
 
 
 }

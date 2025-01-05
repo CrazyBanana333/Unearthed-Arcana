@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "unearthedarcana:item/dawn_of_time"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        225,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        -10,
+        2
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        135,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        -10,
+        2
+      ]
+    }
+  }
+}

@@ -1,14 +1,14 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "unearthedarcana:item/the_throngler"
+    "layer0": "unearthedarcana:item/dawn_of_time"
   },
   "overrides": [
     {
       "predicate": {
         "custom_model_data": 1
       },
-      "model": "unearthedarcana:item/the_throngler_throwing"
+      "model": "unearthedarcana:item/dawn_of_time_throwing"
     }
   ]
 }
